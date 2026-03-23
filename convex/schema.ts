@@ -91,4 +91,10 @@ export default defineSchema({
     key: v.string(),
     value: v.string(),
   }).index("by_user_key", ["userId", "key"]),
+
+  chatMessages: defineTable({
+    userId: v.id("users"),
+    role: v.string(),
+    content: v.string(),
+  }).index("by_user", ["userId"]),
 });

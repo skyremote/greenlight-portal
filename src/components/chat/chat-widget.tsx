@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useTheme } from "@/components/providers/theme-provider";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -15,25 +15,9 @@ import {
   Trash2,
 } from "lucide-react";
 
-interface Message {
-  role: "user" | "assistant";
+interface ChatMessage {
+  role: string;
   content: string;
-}
-
-const STORAGE_KEY = "greenlight_chat_history";
-
-function loadMessages(): Message[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveMessages(messages: Message[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
 }
 
 export function ChatWidget() {
@@ -41,41 +25,39 @@ export function ChatWidget() {
   const { user } = useAuth();
   const userId = user?._id;
 
-  // Pull live data from Convex for AI context
+  // Live data from Convex for AI context
   const coachees = useQuery(api.coachees.list, userId ? { userId: userId as any } : "skip");
   const allActions = useQuery(api.actions.listByUser, userId ? { userId: userId as any } : "skip");
   const speakers = useQuery(api.speakers.list, userId ? { userId: userId as any } : "skip");
 
+  // Chat history from Convex
+  const chatMessages = useQuery(api.chat.list, userId ? { userId: userId as any } : "skip");
+  const sendMessage = useMutation(api.chat.send);
+  const clearChat = useMutation(api.chat.clear);
+
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setMessages(loadMessages());
-    setMounted(true);
-  }, []);
+  const messages: ChatMessage[] = chatMessages?.map((m) => ({
+    role: m.role,
+    content: m.content,
+  })) ?? [];
 
-  useEffect(() => {
-    if (mounted && messages.length > 0) {
-      saveMessages(messages);
-    }
-  }, [messages, mounted]);
-
+  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [chatMessages, loading]);
 
+  // Focus input when opened
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [open]);
 
-  // Build context object with coachee names mapped to actions
   function buildContext() {
     const coacheeMap = new Map<string, string>();
     if (coachees) {
@@ -99,53 +81,46 @@ export function ChatWidget() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const text = input.trim();
-    if (!text || loading) return;
+    if (!text || loading || !userId) return;
 
-    const userMsg: Message = { role: "user", content: text };
-    const updated = [...messages, userMsg];
-    setMessages(updated);
     setInput("");
     setLoading(true);
+
+    // Save user message to Convex
+    await sendMessage({ userId: userId as any, role: "user", content: text });
+
+    const updatedMessages = [...messages, { role: "user", content: text }];
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: updated,
+          messages: updatedMessages,
           context: buildContext(),
         }),
       });
 
       const data = await res.json();
+      const reply = data.error ? `Error: ${data.error}` : data.reply;
 
-      if (data.error) {
-        setMessages([
-          ...updated,
-          { role: "assistant", content: `Error: ${data.error}` },
-        ]);
-      } else {
-        setMessages([
-          ...updated,
-          { role: "assistant", content: data.reply },
-        ]);
-      }
+      // Save assistant response to Convex
+      await sendMessage({ userId: userId as any, role: "assistant", content: reply });
     } catch {
-      setMessages([
-        ...updated,
-        { role: "assistant", content: "Network error. Please try again." },
-      ]);
+      await sendMessage({
+        userId: userId as any,
+        role: "assistant",
+        content: "Network error. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
   }
 
-  function clearHistory() {
-    setMessages([]);
-    localStorage.removeItem(STORAGE_KEY);
+  async function handleClear() {
+    if (!userId) return;
+    await clearChat({ userId: userId as any });
   }
-
-  if (!mounted) return null;
 
   const pendingCount = allActions?.filter((a: any) => !a.done).length ?? 0;
   const coacheeCount = coachees?.length ?? 0;
@@ -208,7 +183,7 @@ export function ChatWidget() {
             <div className="flex items-center gap-1">
               {messages.length > 0 && (
                 <button
-                  onClick={clearHistory}
+                  onClick={handleClear}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-white/[0.04] transition-all"
                   title="Clear history"
                 >
@@ -226,7 +201,7 @@ export function ChatWidget() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-            {messages.length === 0 && (
+            {messages.length === 0 && !loading && (
               <div className="flex flex-col items-center justify-center h-full text-center px-4">
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
