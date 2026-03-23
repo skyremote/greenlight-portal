@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "./logo";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useTheme } from "@/components/providers/theme-provider";
 import { initials, avatarColor } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -22,6 +23,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { colors } = useTheme();
 
   const userId = user?._id;
 
@@ -44,7 +46,6 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   const isCoacheeActive = (id: string) =>
     pathname.startsWith(`/coachee/${id}`);
 
-  // Count pending actions per coachee
   const pendingByCoachee = new Map<string, number>();
   if (allActions) {
     for (const action of allActions) {
@@ -64,23 +65,38 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     router.push("/login");
   };
 
+  const activeStyle = {
+    backgroundColor: colors.sidebarActive,
+  };
+
+  const hoverBg = colors.sidebarHover;
+
   return (
-    <div className="flex flex-col h-full glass-sidebar text-gray-200">
+    <div
+      className="flex flex-col h-full text-gray-200 backdrop-blur-xl"
+      style={{ background: colors.sidebarBg }}
+    >
       {/* Logo */}
-      <div className="p-5 border-b border-green-900/30">
+      <div className="p-5" style={{ borderBottom: `1px solid rgba(${colors.accentRgb}, 0.15)` }}>
         <Logo />
       </div>
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto py-4">
-        {/* Dashboard */}
         <button
           onClick={() => navigate("/dashboard")}
+          style={isActive("/dashboard") ? activeStyle : undefined}
           className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-all duration-200 ${
             isActive("/dashboard")
-              ? "bg-green-500/10 text-green-300 nav-active-indicator"
-              : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
+              ? `${colors.accent} nav-active-indicator`
+              : "text-gray-300 hover:text-gray-100 hover:translate-x-0.5"
           }`}
+          onMouseEnter={(e) => {
+            if (!isActive("/dashboard")) e.currentTarget.style.backgroundColor = hoverBg;
+          }}
+          onMouseLeave={(e) => {
+            if (!isActive("/dashboard")) e.currentTarget.style.backgroundColor = "";
+          }}
         >
           <LayoutDashboard className="w-4 h-4" />
           Dashboard
@@ -89,10 +105,16 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         {/* Coachees Section */}
         <div className="mt-6">
           <div className="px-5 mb-2 flex items-center gap-3">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-green-500/60">
+            <span
+              className="text-[10px] font-semibold uppercase tracking-widest"
+              style={{ color: colors.sidebarSection }}
+            >
               Coachees
             </span>
-            <div className="flex-1 section-divider" />
+            <div
+              className="flex-1 h-px"
+              style={{ background: `linear-gradient(90deg, transparent, rgba(${colors.accentRgb}, 0.15), transparent)` }}
+            />
           </div>
 
           <div className="space-y-0.5">
@@ -104,18 +126,24 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                 <button
                   key={coachee._id}
                   onClick={() => navigate(`/coachee/${coachee._id}`)}
+                  style={active ? activeStyle : undefined}
                   className={`w-full flex items-center gap-3 px-5 py-2 text-sm transition-all duration-200 ${
                     active
-                      ? "bg-green-500/10 text-green-300 nav-active-indicator"
-                      : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
+                      ? `${colors.accent} nav-active-indicator`
+                      : "text-gray-300 hover:text-gray-100 hover:translate-x-0.5"
                   }`}
+                  onMouseEnter={(e) => {
+                    if (!active) e.currentTarget.style.backgroundColor = hoverBg;
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) e.currentTarget.style.backgroundColor = "";
+                  }}
                 >
-                  {/* Avatar */}
                   {coachee.photo ? (
                     <img
                       src={coachee.photo}
                       alt={coachee.name}
-                      className="w-7 h-7 rounded-full object-cover flex-shrink-0 ring-1 ring-white/10 transition-all duration-300 hover:ring-green-500/40"
+                      className="w-7 h-7 rounded-full object-cover flex-shrink-0 ring-1 ring-white/10"
                     />
                   ) : (
                     <div
@@ -131,7 +159,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                   </span>
 
                   {pending > 0 && (
-                    <span className="bg-green-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 shadow-sm shadow-green-500/30">
+                    <span
+                      className={`${colors.badge} text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0`}
+                      style={{ boxShadow: `0 2px 8px rgba(${colors.accentRgb}, 0.3)` }}
+                    >
                       {pending}
                     </span>
                   )}
@@ -140,12 +171,14 @@ export function Sidebar({ onNavigate }: SidebarProps) {
             })}
           </div>
 
-          {/* Add Person Button */}
           <button
             onClick={() => navigate("/dashboard?add=true")}
-            className="w-full flex items-center gap-3 px-5 py-2.5 mt-1 text-sm text-green-400/70 hover:text-green-300 transition-all duration-200 hover:translate-x-0.5"
+            className={`w-full flex items-center gap-3 px-5 py-2.5 mt-1 text-sm ${colors.accentMuted} hover:${colors.accentHover} transition-all duration-200 hover:translate-x-0.5`}
           >
-            <div className="w-7 h-7 rounded-full border-2 border-dashed border-green-500/30 flex items-center justify-center hover:border-green-500/50 transition-colors">
+            <div
+              className="w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center transition-colors"
+              style={{ borderColor: `rgba(${colors.accentRgb}, 0.3)` }}
+            >
               <Plus className="w-3.5 h-3.5" />
             </div>
             <span>Add Person</span>
@@ -155,19 +188,32 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         {/* Resources Section */}
         <div className="mt-6">
           <div className="px-5 mb-2 flex items-center gap-3">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-green-500/60">
+            <span
+              className="text-[10px] font-semibold uppercase tracking-widest"
+              style={{ color: colors.sidebarSection }}
+            >
               Resources
             </span>
-            <div className="flex-1 section-divider" />
+            <div
+              className="flex-1 h-px"
+              style={{ background: `linear-gradient(90deg, transparent, rgba(${colors.accentRgb}, 0.15), transparent)` }}
+            />
           </div>
 
           <button
             onClick={() => navigate("/speakers")}
+            style={pathname.startsWith("/speakers") ? activeStyle : undefined}
             className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-all duration-200 ${
               pathname.startsWith("/speakers")
-                ? "bg-green-500/10 text-green-300 nav-active-indicator"
-                : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
+                ? `${colors.accent} nav-active-indicator`
+                : "text-gray-300 hover:text-gray-100 hover:translate-x-0.5"
             }`}
+            onMouseEnter={(e) => {
+              if (!pathname.startsWith("/speakers")) e.currentTarget.style.backgroundColor = hoverBg;
+            }}
+            onMouseLeave={(e) => {
+              if (!pathname.startsWith("/speakers")) e.currentTarget.style.backgroundColor = "";
+            }}
           >
             <Mic2 className="w-4 h-4" />
             Speaker Notes
@@ -175,11 +221,18 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
           <button
             onClick={() => navigate("/kanban")}
+            style={pathname.startsWith("/kanban") ? activeStyle : undefined}
             className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-all duration-200 ${
               pathname.startsWith("/kanban")
-                ? "bg-green-500/10 text-green-300 nav-active-indicator"
-                : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
+                ? `${colors.accent} nav-active-indicator`
+                : "text-gray-300 hover:text-gray-100 hover:translate-x-0.5"
             }`}
+            onMouseEnter={(e) => {
+              if (!pathname.startsWith("/kanban")) e.currentTarget.style.backgroundColor = hoverBg;
+            }}
+            onMouseLeave={(e) => {
+              if (!pathname.startsWith("/kanban")) e.currentTarget.style.backgroundColor = "";
+            }}
           >
             <Columns3 className="w-4 h-4" />
             Kanban Board
@@ -188,7 +241,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
       </div>
 
       {/* Logout */}
-      <div className="p-4 border-t border-green-900/30">
+      <div className="p-4" style={{ borderTop: `1px solid rgba(${colors.accentRgb}, 0.15)` }}>
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 transition-all duration-200 rounded-lg hover:bg-white/[0.04]"

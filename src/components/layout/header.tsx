@@ -1,8 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Menu, KeyRound, Settings } from "lucide-react";
+import { Menu, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemePicker } from "@/components/layout/theme-picker";
 
 interface HeaderProps {
   title?: string;
@@ -25,7 +26,6 @@ export function Header({ title, onMenuClick }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-14 px-4 md:px-6 glass-header border-b border-white/[0.06] glow-border">
       <div className="flex items-center gap-3">
-        {/* Mobile hamburger */}
         <Button
           variant="ghost"
           size="icon"
@@ -41,6 +41,7 @@ export function Header({ title, onMenuClick }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <ThemePicker />
         <Button
           variant="ghost"
           size="icon"

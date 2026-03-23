@@ -8,6 +8,7 @@ import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { Header } from "@/components/layout/header";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { Logo } from "@/components/layout/logo";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export default function PortalLayout({
   children,
@@ -39,6 +40,7 @@ export default function PortalLayout({
   return (
     <ConvexProvider client={convex}>
       <AuthProvider>
+        <ThemeProvider>
         <div className="flex h-screen overflow-hidden bg-[#0a0a0a]">
           <aside className="hidden md:flex md:w-[280px] md:flex-shrink-0">
             <div className="w-full">
@@ -60,6 +62,7 @@ export default function PortalLayout({
             </main>
           </div>
         </div>
+        </ThemeProvider>
       </AuthProvider>
     </ConvexProvider>
   );
