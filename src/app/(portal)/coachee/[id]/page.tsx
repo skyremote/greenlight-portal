@@ -124,12 +124,12 @@ export default function CoacheePage() {
 
         {/* Tabs */}
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="w-full justify-start bg-white/[0.03] border border-white/[0.06] rounded-lg p-1 mb-6 overflow-x-auto flex-nowrap">
-            <TabsTrigger value="profile" className="text-xs sm:text-sm">Profile</TabsTrigger>
-            <TabsTrigger value="meetings" className="text-xs sm:text-sm">Meetings</TabsTrigger>
-            <TabsTrigger value="actions" className="text-xs sm:text-sm">Actions</TabsTrigger>
-            <TabsTrigger value="schedule" className="text-xs sm:text-sm">Schedule</TabsTrigger>
-            <TabsTrigger value="insights" className="text-xs sm:text-sm">Insights</TabsTrigger>
+          <TabsList className="w-full justify-start bg-white/[0.03] border border-white/[0.06] rounded-lg p-1 mb-6 overflow-x-auto flex-nowrap scrollbar-none">
+            <TabsTrigger value="profile" className="text-xs sm:text-sm shrink-0">Profile</TabsTrigger>
+            <TabsTrigger value="meetings" className="text-xs sm:text-sm shrink-0">Meetings</TabsTrigger>
+            <TabsTrigger value="actions" className="text-xs sm:text-sm shrink-0">Actions</TabsTrigger>
+            <TabsTrigger value="schedule" className="text-xs sm:text-sm shrink-0">Schedule</TabsTrigger>
+            <TabsTrigger value="insights" className="text-xs sm:text-sm shrink-0">Insights</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
@@ -391,11 +391,11 @@ function MeetingsTab({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Meeting History</CardTitle>
-        <Button size="sm" onClick={() => setDialogOpen(true)}>
-          <Plus className="w-4 h-4 mr-1" />
-          Add Meeting
+      <CardHeader className="flex flex-row items-center justify-between gap-2">
+        <CardTitle className="text-base sm:text-lg shrink-0">Meeting History</CardTitle>
+        <Button size="sm" onClick={() => setDialogOpen(true)} className="shrink-0">
+          <Plus className="w-4 h-4 sm:mr-1" />
+          <span className="hidden sm:inline">Add Meeting</span>
         </Button>
       </CardHeader>
       <CardContent>
@@ -446,7 +446,7 @@ function MeetingsTab({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="h-8 w-8 text-gray-600 hover:text-red-400 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
@@ -540,11 +540,11 @@ function ActionsTab({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Action Items</CardTitle>
-        <Button size="sm" onClick={() => setDialogOpen(true)}>
-          <Plus className="w-4 h-4 mr-1" />
-          Add Action
+      <CardHeader className="flex flex-row items-center justify-between gap-2">
+        <CardTitle className="text-base sm:text-lg shrink-0">Action Items</CardTitle>
+        <Button size="sm" onClick={() => setDialogOpen(true)} className="shrink-0">
+          <Plus className="w-4 h-4 sm:mr-1" />
+          <span className="hidden sm:inline">Add Action</span>
         </Button>
       </CardHeader>
       <CardContent>
@@ -558,7 +558,7 @@ function ActionsTab({
             {allItems.map((a: any) => (
               <div
                 key={a._id}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] group transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.04]"
+                className="flex items-start sm:items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] group transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.04]"
               >
                 <button
                   onClick={async () => {
@@ -567,7 +567,7 @@ function ActionsTab({
                       a.done ? "Action reopened" : "Action completed"
                     );
                   }}
-                  className="shrink-0 text-green-500 hover:text-green-400 transition-colors"
+                  className="shrink-0 text-green-500 hover:text-green-400 transition-colors mt-0.5 sm:mt-0"
                 >
                   {a.done ? (
                     <CheckCircle2 className="w-5 h-5" />
@@ -615,7 +615,7 @@ function ActionsTab({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="h-8 w-8 text-gray-600 hover:text-red-400 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
@@ -783,8 +783,8 @@ function ScheduleTab({
           placeholder="Topics to cover in the next session..."
         />
         <Separator />
-        <div className="flex flex-wrap gap-3">
-          <Button onClick={save} disabled={saving}>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+          <Button onClick={save} disabled={saving} className="w-full sm:w-auto">
             {saving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -801,11 +801,12 @@ function ScheduleTab({
             variant="secondary"
             onClick={downloadICS}
             disabled={!form.date}
+            className="w-full sm:w-auto"
           >
             <CalendarDays className="w-4 h-4 mr-2" />
             Calendar Invite
           </Button>
-          <Button variant="secondary" onClick={emailRecap}>
+          <Button variant="secondary" onClick={emailRecap} className="w-full sm:w-auto">
             <Mail className="w-4 h-4 mr-2" />
             Email Recap
           </Button>
@@ -842,9 +843,9 @@ function InsightsTab({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Lightbulb className="w-5 h-5 text-green-500" />
+          <Lightbulb className="w-5 h-5 text-green-500 shrink-0" />
           <span className="text-sm text-gray-400">
             Industry:{" "}
             <strong className="text-gray-200">
@@ -857,6 +858,7 @@ function InsightsTab({
           variant="secondary"
           onClick={refresh}
           disabled={refreshing}
+          className="w-full sm:w-auto"
         >
           {refreshing ? (
             <>

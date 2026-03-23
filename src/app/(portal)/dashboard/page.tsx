@@ -33,7 +33,7 @@ export default function DashboardPage() {
         </h1>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
           <StatCard
             label="Active Coachees"
             value={activeCoachees}
@@ -170,7 +170,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="stagger-item glass-card rounded-xl p-5 relative overflow-hidden group transition-all duration-300"
+      className="stagger-item glass-card rounded-xl p-3 sm:p-5 relative overflow-hidden group transition-all duration-300"
       style={{
         ['--hover-glow' as any]: `0 0 20px ${color}20, 0 0 40px ${color}10`,
       }}
@@ -188,8 +188,8 @@ function StatCard({
           {icon}
         </div>
       </div>
-      <div className="text-3xl font-bold text-gray-100 font-heading">{value}</div>
-      <div className="text-xs text-gray-500 mt-1">{sub}</div>
+      <div className="text-2xl sm:text-3xl font-bold text-gray-100 font-heading">{value}</div>
+      <div className="text-[10px] sm:text-xs text-gray-500 mt-1 truncate">{sub}</div>
     </div>
   );
 }

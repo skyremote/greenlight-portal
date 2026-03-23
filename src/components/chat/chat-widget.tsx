@@ -163,7 +163,7 @@ export function ChatWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-105 active:scale-95 animate-fade-in"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-105 active:scale-95 animate-fade-in safe-bottom"
           style={{
             background: `linear-gradient(135deg, ${colors.preview}, ${colors.preview}cc)`,
             boxShadow: `0 4px 24px ${colors.preview}40, 0 0 48px ${colors.preview}15`,
@@ -180,7 +180,7 @@ export function ChatWidget() {
 
       {open && (
         <div
-          className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)] rounded-2xl flex flex-col overflow-hidden animate-scale-in"
+          className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-50 w-full sm:w-[400px] sm:max-w-[calc(100vw-2rem)] h-[100dvh] sm:h-[580px] sm:max-h-[calc(100vh-4rem)] sm:rounded-2xl flex flex-col overflow-hidden animate-scale-in"
           style={{
             background: "rgba(14, 14, 14, 0.95)",
             backdropFilter: "blur(20px)",
