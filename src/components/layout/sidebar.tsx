@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "./logo";
 import { useAuth } from "@/components/providers/auth-provider";
 import { useTheme } from "@/components/providers/theme-provider";
+import { AddCoacheeDialog } from "@/components/coachee/add-coachee-dialog";
 import { initials, avatarColor } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -171,18 +172,8 @@ export function Sidebar({ onNavigate }: SidebarProps) {
             })}
           </div>
 
-          <button
-            onClick={() => navigate("/dashboard?add=true")}
-            className={`w-full flex items-center gap-3 px-5 py-2.5 mt-1 text-sm ${colors.accentMuted} hover:${colors.accentHover} transition-all duration-200 hover:translate-x-0.5`}
-          >
-            <div
-              className="w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center transition-colors"
-              style={{ borderColor: `rgba(${colors.accentRgb}, 0.3)` }}
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </div>
-            <span>Add Person</span>
-          </button>
+          {/* Add Person Button */}
+          {userId && <AddCoacheeDialog userId={userId as any} variant="sidebar" />}
         </div>
 
         {/* Resources Section */}

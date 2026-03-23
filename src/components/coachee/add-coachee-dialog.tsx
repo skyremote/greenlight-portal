@@ -20,9 +20,10 @@ import { toast } from "sonner";
 
 interface AddCoacheeDialogProps {
   userId: Id<"users">;
+  variant?: "default" | "sidebar";
 }
 
-export function AddCoacheeDialog({ userId }: AddCoacheeDialogProps) {
+export function AddCoacheeDialog({ userId, variant = "default" }: AddCoacheeDialogProps) {
   const [open, setOpen] = useState(false);
   const createCoachee = useMutation(api.coachees.create);
   const coachees = useQuery(api.coachees.list, { userId });
@@ -76,10 +77,22 @@ export function AddCoacheeDialog({ userId }: AddCoacheeDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" onClick={resetForm}>
-          <Plus className="w-4 h-4 mr-1" />
-          Add Coachee
-        </Button>
+        {variant === "sidebar" ? (
+          <button
+            onClick={resetForm}
+            className="w-full flex items-center gap-3 px-5 py-2.5 mt-1 text-sm text-green-400/70 hover:text-green-300 transition-colors border-l-3 border-transparent"
+          >
+            <div className="w-7 h-7 rounded-full border-2 border-dashed border-green-500/40 flex items-center justify-center">
+              <Plus className="w-3.5 h-3.5" />
+            </div>
+            <span>Add Person</span>
+          </button>
+        ) : (
+          <Button size="sm" onClick={resetForm}>
+            <Plus className="w-4 h-4 mr-1" />
+            Add Coachee
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
