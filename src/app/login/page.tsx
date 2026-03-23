@@ -91,25 +91,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center p-4">
-      {/* Subtle background glow */}
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      {/* Animated orb background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-green-500/[0.03] blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-green-500/[0.02] blur-3xl" />
+        <div className="login-orb login-orb-1" />
+        <div className="login-orb login-orb-2" />
+        <div className="login-orb login-orb-3" />
       </div>
 
-      <div className="w-full max-w-md relative z-10">
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Logo />
         </div>
 
-        <Card className="border-[#333]/80 bg-[#2A2A2A]/90 backdrop-blur-sm shadow-2xl shadow-black/40">
+        <Card className="border-white/[0.08] bg-white/[0.04] backdrop-blur-xl shadow-2xl shadow-black/50">
           <CardHeader className="text-center pb-2">
-            <h2
-              className="text-2xl font-semibold text-gray-100"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
-            >
+            <h2 className="text-2xl font-semibold text-gray-100 font-heading">
               {mode === "register" ? "Create your account" : "Welcome back"}
             </h2>
             <p className="text-sm text-gray-400 mt-1">
@@ -171,7 +169,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 text-sm font-medium"
+                className="w-full h-11 text-sm font-medium bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 shadow-lg shadow-green-500/20 hover:shadow-green-500/30"
               >
                 {isSubmitting ? (
                   <>

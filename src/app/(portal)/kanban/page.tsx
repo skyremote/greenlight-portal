@@ -33,7 +33,7 @@ export default function KanbanPage() {
                 <Skeleton className="w-2.5 h-2.5 rounded-full" />
                 <Skeleton className="h-4 w-20" />
               </div>
-              <div className="space-y-2 p-2 rounded-lg border border-[#333] bg-[#2A2A2A] min-h-[200px]">
+              <div className="space-y-2 p-2 rounded-lg border border-white/[0.06] glass-card min-h-[200px]">
                 {[1, 2].map((j) => (
                   <Skeleton key={j} className="h-24 rounded-lg" />
                 ))}
@@ -57,10 +57,7 @@ export default function KanbanPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1
-          className="text-2xl text-gray-100"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
-        >
+        <h1 className="text-2xl text-gray-100 font-heading">
           Action Board
         </h1>
         <p className="text-sm text-gray-400 mt-1">

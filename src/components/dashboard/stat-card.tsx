@@ -12,7 +12,7 @@ export function StatCard({
   color = "#22c55e",
 }: StatCardProps) {
   return (
-    <div className="bg-[#2A2A2A] border border-[#333] rounded-xl overflow-hidden shadow">
+    <div className="glass-card rounded-xl overflow-hidden shadow">
       <div className="flex">
         {/* Color stripe */}
         <div

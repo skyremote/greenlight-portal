@@ -17,13 +17,13 @@ export function UpcomingMeetings() {
 
   if (!upcoming) {
     return (
-      <div className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+      <div className="glass-card rounded-xl p-6">
         <h3 className="text-base font-semibold text-gray-100 mb-4">
           Upcoming Meetings
         </h3>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 bg-[#333] rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-white/[0.06] rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -31,7 +31,7 @@ export function UpcomingMeetings() {
   }
 
   return (
-    <div className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+    <div className="glass-card rounded-xl p-6">
       <h3 className="text-base font-semibold text-gray-100 mb-4">
         Upcoming Meetings
       </h3>
@@ -59,7 +59,7 @@ export function UpcomingMeetings() {
               <button
                 key={meeting._id}
                 onClick={() => router.push(`/coachee/${meeting.coacheeId}`)}
-                className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-[#333] transition-colors text-left"
+                className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-white/[0.04] transition-colors text-left"
               >
                 {/* Date badge */}
                 <div className="w-12 h-12 rounded-lg bg-green-900/30 border border-green-800/40 flex flex-col items-center justify-center flex-shrink-0">

@@ -68,7 +68,7 @@ export default function CoacheePage() {
         {/* Hero */}
         <div className="flex items-center gap-4 mb-6">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold ring-2 ring-[#333] shadow-lg"
+            className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold ring-2 ring-white/[0.08] shadow-lg"
             style={{ background: coachee.photo ? undefined : avatarColor(0) }}
           >
             {coachee.photo ? (
@@ -83,8 +83,7 @@ export default function CoacheePage() {
           </div>
           <div className="flex-1 min-w-0">
             <h1
-              className="text-2xl font-bold text-gray-100"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              className="text-2xl font-bold text-gray-100 font-heading"
             >
               {coachee.name}
             </h1>
@@ -125,7 +124,7 @@ export default function CoacheePage() {
 
         {/* Tabs */}
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="w-full justify-start bg-[#1E1E1E] border border-[#333] rounded-lg p-1 mb-6">
+          <TabsList className="w-full justify-start bg-white/[0.03] border border-white/[0.06] rounded-lg p-1 mb-6">
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="meetings">Meetings</TabsTrigger>
             <TabsTrigger value="actions">Actions</TabsTrigger>
@@ -410,7 +409,7 @@ function MeetingsTab({
             {sorted.map((m: any) => (
               <div
                 key={m._id}
-                className="flex items-start gap-3 p-3 rounded-lg bg-[#1E1E1E] border border-[#333] group transition-colors hover:border-[#444]"
+                className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] group transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.04]"
               >
                 <div className="bg-green-500/15 rounded-lg px-3 py-2 text-center min-w-[48px] shrink-0">
                   <div className="text-[10px] uppercase text-green-400 font-bold">
@@ -559,7 +558,7 @@ function ActionsTab({
             {allItems.map((a: any) => (
               <div
                 key={a._id}
-                className="flex items-center gap-3 p-3 rounded-lg bg-[#1E1E1E] border border-[#333] group transition-colors hover:border-[#444]"
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] group transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.04]"
               >
                 <button
                   onClick={async () => {

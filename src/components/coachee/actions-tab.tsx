@@ -158,7 +158,7 @@ export function ActionsTab({ coacheeId, userId }: ActionsTabProps) {
             {actions.map((action) => (
               <div
                 key={action._id}
-                className="flex items-center gap-3 p-3 rounded-lg bg-[#1E1E1E] border border-[#333] group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] group transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.04]"
               >
                 <button
                   onClick={() => toggleAction({ id: action._id })}

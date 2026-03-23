@@ -26,17 +26,17 @@ export function ProfileHero({ coachee }: ProfileHeroProps) {
   const bgColor = avatarColor(coachee.order ?? 0);
 
   return (
-    <div className="flex items-start gap-6 p-6 rounded-xl bg-[#2A2A2A] border border-[#333]">
+    <div className="flex items-start gap-6 p-6 rounded-xl glass-card">
       <PhotoUpload coacheeId={coachee._id}>
         {coachee.photo ? (
           <img
             src={coachee.photo}
             alt={coachee.name}
-            className="w-[72px] h-[72px] rounded-xl object-cover ring-2 ring-[#333] hover:ring-green-500 transition-all"
+            className="w-[72px] h-[72px] rounded-xl object-cover ring-2 ring-white/[0.08] hover:ring-green-500 transition-all"
           />
         ) : (
           <div
-            className="w-[72px] h-[72px] rounded-xl flex items-center justify-center text-white text-xl font-bold ring-2 ring-[#333] hover:ring-green-500 transition-all"
+            className="w-[72px] h-[72px] rounded-xl flex items-center justify-center text-white text-xl font-bold ring-2 ring-white/[0.08] hover:ring-green-500 transition-all"
             style={{ backgroundColor: bgColor }}
           >
             {initials(coachee.name)}
@@ -46,8 +46,7 @@ export function ProfileHero({ coachee }: ProfileHeroProps) {
 
       <div className="flex-1 min-w-0">
         <h1
-          className="text-2xl text-gray-100 mb-1"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          className="text-2xl text-gray-100 mb-1 font-heading"
         >
           {coachee.name}
         </h1>

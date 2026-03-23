@@ -28,15 +28,15 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 
   return (
     <div className="fixed inset-0 z-50 md:hidden">
-      {/* Backdrop */}
+      {/* Backdrop with blur */}
       <div
         ref={overlayRef}
-        className="absolute inset-0 bg-black/60"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Sidebar panel */}
-      <div className="absolute inset-y-0 left-0 w-[280px] shadow-2xl animate-in slide-in-from-left duration-200">
+      <div className="absolute inset-y-0 left-0 w-[280px] shadow-2xl shadow-black/50 animate-in slide-in-from-left duration-200">
         <div className="absolute top-3 right-3 z-10">
           <Button
             variant="ghost"

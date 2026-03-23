@@ -44,8 +44,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <AlertTriangle className="w-8 h-8 text-red-400" />
           </div>
           <h2
-            className="text-xl font-semibold text-gray-100 mb-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            className="text-xl font-semibold text-gray-100 mb-2 font-heading"
           >
             Something went wrong
           </h2>

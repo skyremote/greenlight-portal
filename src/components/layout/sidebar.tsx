@@ -65,9 +65,9 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0D3B1A] text-gray-200">
+    <div className="flex flex-col h-full glass-sidebar text-gray-200">
       {/* Logo */}
-      <div className="p-5 border-b border-green-900/50">
+      <div className="p-5 border-b border-green-900/30">
         <Logo />
       </div>
 
@@ -76,10 +76,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         {/* Dashboard */}
         <button
           onClick={() => navigate("/dashboard")}
-          className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
+          className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-all duration-200 ${
             isActive("/dashboard")
-              ? "bg-green-900/40 text-green-300 border-l-3 border-green-400"
-              : "text-gray-300 hover:bg-green-900/20 hover:text-gray-100 border-l-3 border-transparent"
+              ? "bg-green-500/10 text-green-300 nav-active-indicator"
+              : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
           }`}
         >
           <LayoutDashboard className="w-4 h-4" />
@@ -88,10 +88,11 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
         {/* Coachees Section */}
         <div className="mt-6">
-          <div className="px-5 mb-2">
+          <div className="px-5 mb-2 flex items-center gap-3">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-green-500/60">
               Coachees
             </span>
+            <div className="flex-1 section-divider" />
           </div>
 
           <div className="space-y-0.5">
@@ -103,10 +104,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                 <button
                   key={coachee._id}
                   onClick={() => navigate(`/coachee/${coachee._id}`)}
-                  className={`w-full flex items-center gap-3 px-5 py-2 text-sm transition-colors ${
+                  className={`w-full flex items-center gap-3 px-5 py-2 text-sm transition-all duration-200 ${
                     active
-                      ? "bg-green-900/40 text-green-300 border-l-3 border-green-400"
-                      : "text-gray-300 hover:bg-green-900/20 hover:text-gray-100 border-l-3 border-transparent"
+                      ? "bg-green-500/10 text-green-300 nav-active-indicator"
+                      : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
                   }`}
                 >
                   {/* Avatar */}
@@ -114,11 +115,11 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                     <img
                       src={coachee.photo}
                       alt={coachee.name}
-                      className="w-7 h-7 rounded-full object-cover flex-shrink-0"
+                      className="w-7 h-7 rounded-full object-cover flex-shrink-0 ring-1 ring-white/10 transition-all duration-300 hover:ring-green-500/40"
                     />
                   ) : (
                     <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 ring-1 ring-white/10"
                       style={{ backgroundColor: avatarColor(idx) }}
                     >
                       {initials(coachee.name)}
@@ -130,7 +131,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                   </span>
 
                   {pending > 0 && (
-                    <span className="bg-green-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
+                    <span className="bg-green-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 shadow-sm shadow-green-500/30">
                       {pending}
                     </span>
                   )}
@@ -142,9 +143,9 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           {/* Add Person Button */}
           <button
             onClick={() => navigate("/dashboard?add=true")}
-            className="w-full flex items-center gap-3 px-5 py-2.5 mt-1 text-sm text-green-400/70 hover:text-green-300 transition-colors border-l-3 border-transparent"
+            className="w-full flex items-center gap-3 px-5 py-2.5 mt-1 text-sm text-green-400/70 hover:text-green-300 transition-all duration-200 hover:translate-x-0.5"
           >
-            <div className="w-7 h-7 rounded-full border-2 border-dashed border-green-500/40 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full border-2 border-dashed border-green-500/30 flex items-center justify-center hover:border-green-500/50 transition-colors">
               <Plus className="w-3.5 h-3.5" />
             </div>
             <span>Add Person</span>
@@ -153,18 +154,19 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
         {/* Resources Section */}
         <div className="mt-6">
-          <div className="px-5 mb-2">
+          <div className="px-5 mb-2 flex items-center gap-3">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-green-500/60">
               Resources
             </span>
+            <div className="flex-1 section-divider" />
           </div>
 
           <button
             onClick={() => navigate("/speakers")}
-            className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
+            className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-all duration-200 ${
               pathname.startsWith("/speakers")
-                ? "bg-green-900/40 text-green-300 border-l-3 border-green-400"
-                : "text-gray-300 hover:bg-green-900/20 hover:text-gray-100 border-l-3 border-transparent"
+                ? "bg-green-500/10 text-green-300 nav-active-indicator"
+                : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
             }`}
           >
             <Mic2 className="w-4 h-4" />
@@ -173,10 +175,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
           <button
             onClick={() => navigate("/kanban")}
-            className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
+            className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-all duration-200 ${
               pathname.startsWith("/kanban")
-                ? "bg-green-900/40 text-green-300 border-l-3 border-green-400"
-                : "text-gray-300 hover:bg-green-900/20 hover:text-gray-100 border-l-3 border-transparent"
+                ? "bg-green-500/10 text-green-300 nav-active-indicator"
+                : "text-gray-300 hover:bg-white/[0.04] hover:text-gray-100 hover:translate-x-0.5"
             }`}
           >
             <Columns3 className="w-4 h-4" />
@@ -186,10 +188,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
       </div>
 
       {/* Logout */}
-      <div className="p-4 border-t border-green-900/50">
+      <div className="p-4 border-t border-green-900/30">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 transition-colors rounded-lg hover:bg-green-900/20"
+          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 transition-all duration-200 rounded-lg hover:bg-white/[0.04]"
         >
           <LogOut className="w-4 h-4" />
           Sign Out

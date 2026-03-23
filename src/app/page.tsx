@@ -9,7 +9,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#1E1E1E] flex flex-col items-center justify-center gap-4">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center gap-4">
       <Logo />
       <div className="h-6 w-6 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
       <p className="text-sm text-gray-500">Redirecting...</p>

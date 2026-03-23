@@ -39,30 +39,31 @@ export function SessionsChart({ meetings }: SessionsChartProps) {
   }
 
   return (
-    <div className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+    <div className="glass-card rounded-xl p-6">
       <h3 className="text-base font-semibold text-gray-100 mb-4">
         Sessions per Month
       </h3>
       <div className="h-[250px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
             <XAxis
               dataKey="month"
               tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={{ stroke: "#444" }}
+              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
             />
             <YAxis
               tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={{ stroke: "#444" }}
+              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
               allowDecimals={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#333",
-                border: "1px solid #444",
+                backgroundColor: "rgba(20,20,20,0.95)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                backdropFilter: "blur(12px)",
                 borderRadius: "8px",
                 color: "#e5e7eb",
                 fontSize: "13px",

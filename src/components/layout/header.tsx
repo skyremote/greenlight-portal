@@ -23,7 +23,7 @@ export function Header({ title, onMenuClick }: HeaderProps) {
   const pageTitle = title || getTitleFromPath(pathname);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-14 px-4 md:px-6 bg-[#222] border-b border-[#333]">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-14 px-4 md:px-6 glass-header border-b border-white/[0.06] glow-border">
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
         <Button

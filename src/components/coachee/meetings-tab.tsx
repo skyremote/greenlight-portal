@@ -185,7 +185,7 @@ export function MeetingsTab({ coacheeId, userId }: MeetingsTabProps) {
             {sorted.map((meeting) => (
               <div
                 key={meeting._id}
-                className="flex items-start gap-4 p-4 rounded-lg bg-[#1E1E1E] border border-[#333]"
+                className="flex items-start gap-4 p-4 rounded-lg bg-white/[0.02] border border-white/[0.06] transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.04]"
               >
                 <Badge className="shrink-0 mt-0.5">
                   {formatDate(meeting.date)}

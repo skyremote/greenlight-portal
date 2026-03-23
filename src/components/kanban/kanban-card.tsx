@@ -56,7 +56,7 @@ export function KanbanCard({
       style={style}
       {...listeners}
       {...attributes}
-      className="p-3 rounded-lg bg-[#1E1E1E] border border-[#333] shadow-sm cursor-grab active:cursor-grabbing hover:border-[#444] transition-colors"
+      className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] shadow-sm cursor-grab active:cursor-grabbing hover:border-white/[0.1] hover:bg-white/[0.04] transition-all duration-200"
     >
       <p className="text-sm text-gray-200 mb-2 line-clamp-3">{text}</p>
       <div className="flex items-center justify-between gap-2">

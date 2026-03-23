@@ -26,8 +26,8 @@ export default function PortalLayout({
 
   if (!convex) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#1E1E1E]">
-        <div className="flex flex-col items-center gap-4">
+      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
+        <div className="flex flex-col items-center gap-4 animate-fade-in">
           <Logo compact />
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
           <p className="text-sm text-gray-500">Loading portal...</p>
@@ -39,7 +39,7 @@ export default function PortalLayout({
   return (
     <ConvexProvider client={convex}>
       <AuthProvider>
-        <div className="flex h-screen overflow-hidden bg-[#1E1E1E]">
+        <div className="flex h-screen overflow-hidden bg-[#0a0a0a]">
           <aside className="hidden md:flex md:w-[280px] md:flex-shrink-0">
             <div className="w-full">
               <Sidebar />
@@ -54,7 +54,9 @@ export default function PortalLayout({
           <div className="flex flex-col flex-1 min-w-0">
             <Header onMenuClick={() => setMobileOpen(true)} />
             <main className="flex-1 overflow-y-auto p-4 md:p-6">
-              <ErrorBoundary>{children}</ErrorBoundary>
+              <div className="animate-fade-in">
+                <ErrorBoundary>{children}</ErrorBoundary>
+              </div>
             </main>
           </div>
         </div>

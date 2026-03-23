@@ -27,7 +27,7 @@ export function KanbanColumn({ id, title, items, color }: KanbanColumnProps) {
       <div className="flex items-center gap-2 mb-3">
         <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
         <h3 className="text-sm font-medium text-gray-200">{title}</h3>
-        <span className="text-xs text-gray-500 bg-[#333] px-1.5 py-0.5 rounded-full">
+        <span className="text-xs text-gray-500 bg-white/[0.06] px-1.5 py-0.5 rounded-full">
           {items.length}
         </span>
       </div>
@@ -36,7 +36,7 @@ export function KanbanColumn({ id, title, items, color }: KanbanColumnProps) {
         className={`space-y-2 min-h-[200px] p-2 rounded-lg border transition-colors ${
           isOver
             ? "border-green-500/40 bg-green-500/5"
-            : "border-[#333] bg-[#2A2A2A]"
+            : "border-white/[0.06] bg-white/[0.03]"
         }`}
       >
         {items.map((item) => (

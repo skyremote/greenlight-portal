@@ -20,13 +20,13 @@ export function PendingActions() {
 
   if (!allActions || !coachees) {
     return (
-      <div className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+      <div className="glass-card rounded-xl p-6">
         <h3 className="text-base font-semibold text-gray-100 mb-4">
           Pending Actions
         </h3>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-14 bg-[#333] rounded-lg animate-pulse" />
+            <div key={i} className="h-14 bg-white/[0.06] rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -42,7 +42,7 @@ export function PendingActions() {
   const pending = allActions.filter((a) => !a.done);
 
   return (
-    <div className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+    <div className="glass-card rounded-xl p-6">
       <h3 className="text-base font-semibold text-gray-100 mb-4">
         Pending Actions
       </h3>
@@ -56,7 +56,7 @@ export function PendingActions() {
           {pending.slice(0, 8).map((action) => (
             <div
               key={action._id}
-              className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#333] transition-colors"
+              className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
             >
               <CircleDot className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">

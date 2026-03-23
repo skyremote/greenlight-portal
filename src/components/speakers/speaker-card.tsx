@@ -131,11 +131,7 @@ export function SpeakerCard({ speaker, index, userId }: SpeakerCardProps) {
                 {/* Average Rating */}
                 <div className="text-right shrink-0">
                   <span
-                    className="text-3xl font-bold"
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      color: "#DAA520",
-                    }}
+                    className="text-3xl font-bold font-heading text-gold"
                   >
                     {avgRating > 0 ? avgRating.toFixed(1) : "--"}
                   </span>
@@ -158,7 +154,7 @@ export function SpeakerCard({ speaker, index, userId }: SpeakerCardProps) {
 
         <CardContent className="pt-0">
           {/* Action bar */}
-          <div className="flex items-center justify-between border-t border-[#333] pt-3">
+          <div className="flex items-center justify-between border-t border-white/[0.06] pt-3">
             <Button
               variant="ghost"
               size="sm"
@@ -203,7 +199,7 @@ export function SpeakerCard({ speaker, index, userId }: SpeakerCardProps) {
 
           {/* Expanded details */}
           {expanded && (
-            <div className="mt-4 space-y-4 border-t border-[#333] pt-4">
+            <div className="mt-4 space-y-4 border-t border-white/[0.06] pt-4">
               {/* Individual ratings */}
               <div>
                 <h4 className="text-sm font-medium text-gray-300 mb-3">
@@ -214,7 +210,7 @@ export function SpeakerCard({ speaker, index, userId }: SpeakerCardProps) {
                     {coachees.map((coachee) => (
                       <div
                         key={coachee._id}
-                        className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-[#1E1E1E]"
+                        className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-white/[0.02]"
                       >
                         <span className="text-sm text-gray-300">
                           {coachee.name}

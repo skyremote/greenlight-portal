@@ -25,7 +25,7 @@ export function ActionsChart({ completed, pending }: ActionsChartProps) {
   const total = completed + pending;
 
   return (
-    <div className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+    <div className="glass-card rounded-xl p-6">
       <h3 className="text-base font-semibold text-gray-100 mb-4">
         Actions Overview
       </h3>
@@ -56,8 +56,9 @@ export function ActionsChart({ completed, pending }: ActionsChartProps) {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#333",
-                  border: "1px solid #444",
+                  backgroundColor: "rgba(20,20,20,0.95)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  backdropFilter: "blur(12px)",
                   borderRadius: "8px",
                   color: "#e5e7eb",
                   fontSize: "13px",
@@ -78,7 +79,7 @@ export function ActionsChart({ completed, pending }: ActionsChartProps) {
                 textAnchor="middle"
                 dominantBaseline="middle"
                 className="fill-gray-100"
-                style={{ fontSize: "24px", fontFamily: "Cormorant Garamond" }}
+                style={{ fontSize: "24px", fontFamily: "var(--font-heading)" }}
               >
                 {total}
               </text>

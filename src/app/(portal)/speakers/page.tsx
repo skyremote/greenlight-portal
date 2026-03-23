@@ -55,7 +55,7 @@ export default function SpeakersPage() {
         </div>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+            <div key={i} className="glass-card rounded-xl p-6">
               <div className="flex items-start gap-4">
                 <Skeleton className="w-12 h-12 rounded-xl" />
                 <div className="flex-1 space-y-2">
@@ -76,10 +76,7 @@ export default function SpeakersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1
-            className="text-2xl text-gray-100"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
-          >
+          <h1 className="text-2xl text-gray-100 font-heading">
             Speaker Notes
           </h1>
           <p className="text-sm text-gray-400 mt-1">
