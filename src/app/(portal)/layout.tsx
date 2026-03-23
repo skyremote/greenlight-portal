@@ -9,6 +9,7 @@ import { Header } from "@/components/layout/header";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { Logo } from "@/components/layout/logo";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ChatWidget } from "@/components/chat/chat-widget";
 
 export default function PortalLayout({
   children,
@@ -62,6 +63,7 @@ export default function PortalLayout({
             </main>
           </div>
         </div>
+        <ChatWidget />
         </ThemeProvider>
       </AuthProvider>
     </ConvexProvider>
