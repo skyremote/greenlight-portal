@@ -8,6 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { Save, Loader2, RotateCcw } from "lucide-react";
 
 interface CoacheeData {
   _id: Id<"coachees">;
@@ -68,22 +70,32 @@ export function ProfileTab({ coachee }: ProfileTabProps) {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const [saving, setSaving] = useState(false);
+
   const handleSave = async () => {
-    await updateCoachee({
-      id: coachee._id,
-      name: form.name,
-      email: form.email,
-      jobTitle: form.jobTitle || undefined,
-      company: form.company || undefined,
-      phone: form.phone || undefined,
-      location: form.location || undefined,
-      linkedin: form.linkedin || undefined,
-      industry: form.industry || undefined,
-      specialisation: form.specialisation || undefined,
-      businessProfile: form.businessProfile || undefined,
-      interests: form.interests || undefined,
-      notes: form.notes || undefined,
-    });
+    setSaving(true);
+    try {
+      await updateCoachee({
+        id: coachee._id,
+        name: form.name,
+        email: form.email,
+        jobTitle: form.jobTitle || undefined,
+        company: form.company || undefined,
+        phone: form.phone || undefined,
+        location: form.location || undefined,
+        linkedin: form.linkedin || undefined,
+        industry: form.industry || undefined,
+        specialisation: form.specialisation || undefined,
+        businessProfile: form.businessProfile || undefined,
+        interests: form.interests || undefined,
+        notes: form.notes || undefined,
+      });
+      toast.success("Profile saved", { description: "Coachee details have been updated." });
+    } catch (e) {
+      toast.error("Failed to save", { description: "An error occurred while saving." });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDiscard = () => {
@@ -101,6 +113,7 @@ export function ProfileTab({ coachee }: ProfileTabProps) {
       interests: coachee.interests ?? "",
       notes: coachee.notes ?? "",
     });
+    toast.info("Changes discarded");
   };
 
   return (
@@ -248,9 +261,22 @@ export function ProfileTab({ coachee }: ProfileTabProps) {
       {/* Action Buttons */}
       <div className="flex gap-3 justify-end">
         <Button variant="ghost" onClick={handleDiscard}>
+          <RotateCcw className="w-4 h-4 mr-2" />
           Discard Changes
         </Button>
-        <Button onClick={handleSave}>Save All Changes</Button>
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              Save All Changes
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );

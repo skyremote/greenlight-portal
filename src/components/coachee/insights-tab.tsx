@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
@@ -7,7 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/shared/empty-state";
-import { RefreshCw, Lightbulb } from "lucide-react";
+import { RefreshCw, Lightbulb, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface InsightsTabProps {
   coacheeId: Id<"coachees">;
@@ -19,8 +21,18 @@ export function InsightsTab({ coacheeId, userId, industry }: InsightsTabProps) {
   const insights = useQuery(api.insights.listByCoachee, { coacheeId });
   const refreshInsights = useMutation(api.insights.refresh);
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const handleRefresh = async () => {
-    await refreshInsights({ coacheeId, userId });
+    setRefreshing(true);
+    try {
+      await refreshInsights({ coacheeId, userId });
+      toast.success("Insights refreshed", { description: "New industry insights have been generated." });
+    } catch (e) {
+      toast.error("Failed to refresh insights");
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return (
@@ -30,9 +42,18 @@ export function InsightsTab({ coacheeId, userId, industry }: InsightsTabProps) {
           <Lightbulb className="w-5 h-5 text-green-500" />
           {industry && <Badge variant="secondary">{industry}</Badge>}
         </div>
-        <Button size="sm" variant="secondary" onClick={handleRefresh}>
-          <RefreshCw className="w-4 h-4 mr-1" />
-          Refresh Insights
+        <Button size="sm" variant="secondary" onClick={handleRefresh} disabled={refreshing}>
+          {refreshing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+              Refreshing...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="w-4 h-4 mr-1" />
+              Refresh Insights
+            </>
+          )}
         </Button>
       </div>
 

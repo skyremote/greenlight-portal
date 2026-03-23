@@ -19,6 +19,7 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Plus, Trash2, CheckCircle2, Circle } from "lucide-react";
+import { toast } from "sonner";
 
 interface ActionsTabProps {
   coacheeId: Id<"coachees">;
@@ -77,6 +78,7 @@ export function ActionsTab({ coacheeId, userId }: ActionsTabProps) {
       status: "todo",
       userId,
     });
+    toast.success("Action added", { description: "New action item has been created." });
     setDialogOpen(false);
     resetForm();
   };

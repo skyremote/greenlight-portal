@@ -8,7 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarDays, Mail, Save } from "lucide-react";
+import { CalendarDays, Mail, Save, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ScheduleTabProps {
   coacheeId: Id<"coachees">;
@@ -46,16 +47,26 @@ export function ScheduleTab({
     }
   }, [schedule]);
 
+  const [saving, setSaving] = useState(false);
+
   const handleSave = async () => {
-    await upsertSchedule({
-      coacheeId,
-      date: form.date || undefined,
-      time: form.time || undefined,
-      location: form.location || undefined,
-      duration: form.duration || undefined,
-      agenda: form.agenda || undefined,
-      userId,
-    });
+    setSaving(true);
+    try {
+      await upsertSchedule({
+        coacheeId,
+        date: form.date || undefined,
+        time: form.time || undefined,
+        location: form.location || undefined,
+        duration: form.duration || undefined,
+        agenda: form.agenda || undefined,
+        userId,
+      });
+      toast.success("Schedule saved", { description: "The next meeting details have been updated." });
+    } catch (e) {
+      toast.error("Failed to save schedule");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDownloadICS = () => {
@@ -99,6 +110,7 @@ export function ScheduleTab({
     a.download = `coaching-${coacheeName.replace(/\s+/g, "-").toLowerCase()}.ics`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success("Calendar invite downloaded");
   };
 
   const handleEmailRecap = () => {
@@ -178,9 +190,18 @@ export function ScheduleTab({
           />
         </div>
         <div className="flex flex-wrap gap-3 pt-2">
-          <Button onClick={handleSave}>
-            <Save className="w-4 h-4 mr-1" />
-            Save Schedule
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-1" />
+                Save Schedule
+              </>
+            )}
           </Button>
           <Button
             variant="secondary"

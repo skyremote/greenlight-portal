@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { toast } from "sonner";
 import { Logo } from "@/components/layout/logo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { LogIn, UserPlus, Loader2, Shield } from "lucide-react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -16,6 +22,9 @@ export default function LoginPage() {
 
     if (!username.trim() || !password.trim()) {
       setError("Please enter both username and password.");
+      toast.error("Missing credentials", {
+        description: "Please enter both username and password.",
+      });
       return;
     }
 
@@ -38,22 +47,44 @@ export default function LoginPage() {
 
       if (data.status === "success" && data.value?.token) {
         localStorage.setItem("greenlight_session_token", data.value.token);
+        toast.success(
+          mode === "register" ? "Account created" : "Welcome back",
+          {
+            description:
+              mode === "register"
+                ? "Your account has been created successfully."
+                : "You have been signed in.",
+          }
+        );
         window.location.href = "/dashboard";
         return;
       } else if (data.errorMessage) {
         const msg = data.errorMessage;
         if (msg.includes("already exists")) {
           setError("Username taken. Try signing in.");
+          toast.error("Username taken", {
+            description: "This username is already registered. Try signing in instead.",
+          });
         } else if (msg.includes("Invalid")) {
           setError("Invalid username or password.");
+          toast.error("Invalid credentials", {
+            description: "Please check your username and password.",
+          });
         } else {
           setError(msg);
+          toast.error("Error", { description: msg });
         }
       } else {
         setError("Something went wrong.");
+        toast.error("Something went wrong", {
+          description: "Please try again later.",
+        });
       }
     } catch (err: any) {
       setError(err?.message || "Network error.");
+      toast.error("Network error", {
+        description: "Could not reach the server. Please check your connection.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -61,41 +92,149 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      {/* Subtle background glow */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-green-500/[0.03] blur-3xl" />
+        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-green-500/[0.02] blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo */}
         <div className="flex justify-center mb-8">
           <Logo />
         </div>
-        <div className="bg-[#2A2A2A] border border-[#333] rounded-xl p-8 shadow-xl">
-          <h2 className="text-2xl font-semibold text-gray-100 text-center mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Welcome
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4 w-full">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-300">Username</label>
-              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter a username" disabled={isSubmitting}
-                className="w-full px-3 py-2 bg-[#1E1E1E] border border-[#444] rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-green-500" />
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-300">Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter a password" disabled={isSubmitting}
-                className="w-full px-3 py-2 bg-[#1E1E1E] border border-[#444] rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-green-500" />
-            </div>
-            {error && <p className="text-sm text-red-400">{error}</p>}
-            <button type="submit" disabled={isSubmitting}
-              className="w-full py-2 px-4 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition disabled:opacity-50">
-              {isSubmitting ? (mode === "register" ? "Creating account..." : "Signing in...") : (mode === "register" ? "Create Account" : "Sign In")}
-            </button>
-            <p className="text-center text-sm text-gray-400">
-              {mode === "login" ? (
-                <>No account? <button type="button" onClick={() => { setMode("register"); setError(null); }} className="text-green-400 underline">Register</button></>
-              ) : (
-                <>Have an account? <button type="button" onClick={() => { setMode("login"); setError(null); }} className="text-green-400 underline">Sign In</button></>
-              )}
+
+        <Card className="border-[#333]/80 bg-[#2A2A2A]/90 backdrop-blur-sm shadow-2xl shadow-black/40">
+          <CardHeader className="text-center pb-2">
+            <h2
+              className="text-2xl font-semibold text-gray-100"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              {mode === "register" ? "Create your account" : "Welcome back"}
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              {mode === "register"
+                ? "Set up your coaching portal in seconds"
+                : "Sign in to continue to your portal"}
             </p>
-          </form>
-        </div>
+          </CardHeader>
+
+          <CardContent className="pt-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label
+                  htmlFor="username"
+                  className="text-sm font-medium text-gray-300"
+                >
+                  Username
+                </label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter a username"
+                  disabled={isSubmitting}
+                  autoComplete="username"
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-300"
+                >
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter a password"
+                  disabled={isSubmitting}
+                  autoComplete={
+                    mode === "register" ? "new-password" : "current-password"
+                  }
+                  className="h-11"
+                />
+              </div>
+
+              {error && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                  <Shield className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                  <p className="text-sm text-red-400">{error}</p>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-11 text-sm font-medium"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {mode === "register"
+                      ? "Creating account..."
+                      : "Signing in..."}
+                  </>
+                ) : mode === "register" ? (
+                  <>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Create Account
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Sign In
+                  </>
+                )}
+              </Button>
+
+              <Separator className="my-2" />
+
+              <p className="text-center text-sm text-gray-400">
+                {mode === "login" ? (
+                  <>
+                    No account?{" "}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode("register");
+                        setError(null);
+                      }}
+                      className="text-green-400 hover:text-green-300 font-medium transition-colors"
+                    >
+                      Register
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Have an account?{" "}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode("login");
+                        setError(null);
+                      }}
+                      className="text-green-400 hover:text-green-300 font-medium transition-colors"
+                    >
+                      Sign In
+                    </button>
+                  </>
+                )}
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Footer tagline */}
+        <p className="text-center text-xs text-gray-600 mt-6">
+          Greenlight Coaching Portal &middot; Empowering growth through
+          structured coaching
+        </p>
       </div>
     </div>
   );

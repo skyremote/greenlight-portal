@@ -19,6 +19,7 @@ import {
   ChevronUp,
   ExternalLink,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface SpeakerCardProps {
   speaker: {
@@ -76,6 +77,7 @@ export function SpeakerCard({ speaker, index, userId }: SpeakerCardProps) {
       id: speaker._id,
       notes: notesValue || undefined,
     });
+    toast.success("Notes saved");
   };
 
   const getRatingForCoachee = (coacheeId: Id<"coachees">) => {

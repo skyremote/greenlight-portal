@@ -30,7 +30,8 @@ export const listUpcoming = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
-    const upcoming = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const upcoming: any[] = [];
     const today = new Date().toISOString().split("T")[0];
 
     for (const coachee of coachees) {

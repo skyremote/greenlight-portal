@@ -7,8 +7,10 @@ import { SpeakerCard } from "@/components/speakers/speaker-card";
 import { SpeakerDialog } from "@/components/speakers/speaker-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SpeakersPage() {
   const { user } = useAuth();
@@ -20,7 +22,7 @@ export default function SpeakersPage() {
   );
   const createSpeaker = useMutation(api.speakers.create);
 
-  const handleAdd = (data: {
+  const handleAdd = async (data: {
     name: string;
     topic: string;
     date: string;
@@ -28,7 +30,7 @@ export default function SpeakersPage() {
     bio: string;
   }) => {
     if (!user) return;
-    createSpeaker({
+    await createSpeaker({
       name: data.name,
       topic: data.topic || undefined,
       date: data.date || undefined,
@@ -36,7 +38,39 @@ export default function SpeakersPage() {
       bio: data.bio || undefined,
       userId: user._id,
     });
+    toast.success("Speaker added", {
+      description: `${data.name} has been added to your speakers.`,
+    });
   };
+
+  if (!speakers) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <Skeleton className="h-8 w-40 mb-2" />
+            <Skeleton className="h-4 w-56" />
+          </div>
+          <Skeleton className="h-9 w-32 rounded-md" />
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-[#2A2A2A] border border-[#333] rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <Skeleton className="w-12 h-12 rounded-xl" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-5 w-40" />
+                  <Skeleton className="h-4 w-60" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+                <Skeleton className="h-10 w-10" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -58,7 +92,7 @@ export default function SpeakersPage() {
         </Button>
       </div>
 
-      {!speakers || speakers.length === 0 ? (
+      {speakers.length === 0 ? (
         <EmptyState
           icon="🎤"
           message="No speakers added yet. Click 'Add Speaker' to get started."

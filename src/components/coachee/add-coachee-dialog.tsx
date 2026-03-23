@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 
 interface AddCoacheeDialogProps {
   userId: Id<"users">;
@@ -65,6 +66,9 @@ export function AddCoacheeDialog({ userId }: AddCoacheeDialogProps) {
       userId,
     });
 
+    toast.success("Coachee created", {
+      description: `${form.name.trim()} has been added to your coachees.`,
+    });
     setOpen(false);
     resetForm();
   };

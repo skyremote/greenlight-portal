@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
+import { toast } from "sonner";
 
 interface PhotoUploadProps {
   coacheeId: Id<"coachees">;
@@ -50,6 +51,7 @@ export function PhotoUpload({ coacheeId, children }: PhotoUploadProps) {
         ctx.drawImage(img, 0, 0, width, height);
         const base64 = canvas.toDataURL("image/jpeg", 0.8);
         updateCoachee({ id: coacheeId, photo: base64 });
+        toast.success("Photo updated");
       };
       img.src = event.target?.result as string;
     };

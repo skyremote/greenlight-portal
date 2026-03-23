@@ -21,6 +21,7 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { formatDate } from "@/lib/utils";
 import { Plus, Pencil, Trash2, MapPin, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 interface MeetingsTabProps {
   coacheeId: Id<"coachees">;
@@ -79,6 +80,7 @@ export function MeetingsTab({ coacheeId, userId }: MeetingsTabProps) {
         location: form.location || undefined,
         notes: form.notes || undefined,
       });
+      toast.success("Meeting updated");
     } else {
       await createMeeting({
         coacheeId,
@@ -88,6 +90,7 @@ export function MeetingsTab({ coacheeId, userId }: MeetingsTabProps) {
         notes: form.notes || undefined,
         userId,
       });
+      toast.success("Meeting added", { description: "The meeting has been recorded." });
     }
     setDialogOpen(false);
     resetForm();

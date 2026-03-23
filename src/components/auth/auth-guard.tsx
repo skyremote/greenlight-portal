@@ -3,6 +3,7 @@
 import { useEffect, ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/providers/auth-provider"
+import { Logo } from "@/components/layout/logo"
 
 interface AuthGuardProps {
   children: ReactNode
@@ -21,9 +22,10 @@ export function AuthGuard({ children }: AuthGuardProps) {
   if (isLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#1E1E1E]">
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-4">
+          <Logo compact />
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
-          <p className="text-sm text-gray-400">Loading...</p>
+          <p className="text-sm text-gray-500">Verifying session...</p>
         </div>
       </div>
     )
