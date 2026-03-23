@@ -20,6 +20,8 @@ interface ChatMessage {
   content: string;
 }
 
+const STORAGE_KEY = "greenlight_chat_history";
+
 export function ChatWidget() {
   const { colors } = useTheme();
   const { user } = useAuth();
@@ -30,104 +32,134 @@ export function ChatWidget() {
   const allActions = useQuery(api.actions.listByUser, userId ? { userId: userId as any } : "skip");
   const speakers = useQuery(api.speakers.list, userId ? { userId: userId as any } : "skip");
 
-  // Chat history from Convex
-  const chatMessages = useQuery(api.chat.list, userId ? { userId: userId as any } : "skip");
-  const sendMessage = useMutation(api.chat.send);
-  const clearChat = useMutation(api.chat.clear);
-
   const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const messages: ChatMessage[] = chatMessages?.map((m) => ({
-    role: m.role,
-    content: m.content,
-  })) ?? [];
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setMessages(JSON.parse(saved));
+    } catch {}
+    setMounted(true);
+  }, []);
 
-  // Auto-scroll to bottom
+  // Persist to localStorage
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages, mounted]);
+
+  // Try to sync with Convex if available — upgrade path for when mate deploys
+  const [convexReady, setConvexReady] = useState(false);
+  useEffect(() => {
+    if (!userId) return;
+    // Test if chat functions exist by doing a fetch
+    fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: "chat:list", args: { userId } }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.status === "success") {
+          setConvexReady(true);
+          // Load messages from Convex if we have none locally
+          if (d.value?.length > 0 && messages.length === 0) {
+            const convexMsgs = d.value.map((m: any) => ({ role: m.role, content: m.content }));
+            setMessages(convexMsgs);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [userId]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages, loading]);
+  }, [messages, loading]);
 
-  // Focus input when opened
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+    if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
   function buildContext() {
     const coacheeMap = new Map<string, string>();
     if (coachees) {
-      for (const c of coachees) {
-        coacheeMap.set(c._id, c.name);
-      }
+      for (const c of coachees) coacheeMap.set(c._id, c.name);
     }
-
-    const actionsWithNames = allActions?.map((a: any) => ({
-      ...a,
-      coacheeName: coacheeMap.get(a.coacheeId) || "Unknown",
-    }));
-
     return {
       coachees: coachees || [],
-      actions: actionsWithNames || [],
+      actions: allActions?.map((a: any) => ({ ...a, coacheeName: coacheeMap.get(a.coacheeId) || "Unknown" })) || [],
       speakers: speakers || [],
     };
+  }
+
+  // Save to Convex in background (fire-and-forget)
+  function saveToConvex(role: string, content: string) {
+    if (!convexReady || !userId) return;
+    fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/mutation`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: "chat:send", args: { userId, role, content } }),
+    }).catch(() => {});
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const text = input.trim();
-    if (!text || loading || !userId) return;
+    if (!text || loading) return;
 
+    const userMsg: ChatMessage = { role: "user", content: text };
+    const updated = [...messages, userMsg];
+    setMessages(updated);
     setInput("");
     setLoading(true);
 
-    // Save user message to Convex
-    await sendMessage({ userId: userId as any, role: "user", content: text });
-
-    const updatedMessages = [...messages, { role: "user", content: text }];
+    saveToConvex("user", text);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: updatedMessages,
-          context: buildContext(),
-        }),
+        body: JSON.stringify({ messages: updated, context: buildContext() }),
       });
-
       const data = await res.json();
       const reply = data.error ? `Error: ${data.error}` : data.reply;
-
-      // Save assistant response to Convex
-      await sendMessage({ userId: userId as any, role: "assistant", content: reply });
+      setMessages([...updated, { role: "assistant", content: reply }]);
+      saveToConvex("assistant", reply);
     } catch {
-      await sendMessage({
-        userId: userId as any,
-        role: "assistant",
-        content: "Network error. Please try again.",
-      });
+      const errMsg = "Network error. Please try again.";
+      setMessages([...updated, { role: "assistant", content: errMsg }]);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleClear() {
-    if (!userId) return;
-    await clearChat({ userId: userId as any });
+  function handleClear() {
+    setMessages([]);
+    localStorage.removeItem(STORAGE_KEY);
+    if (convexReady && userId) {
+      fetch(`${process.env.NEXT_PUBLIC_CONVEX_URL}/api/mutation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: "chat:clear", args: { userId } }),
+      }).catch(() => {});
+    }
   }
+
+  if (!mounted) return null;
 
   const pendingCount = allActions?.filter((a: any) => !a.done).length ?? 0;
   const coacheeCount = coachees?.length ?? 0;
 
   return (
     <>
-      {/* Chat FAB */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
@@ -146,7 +178,6 @@ export function ChatWidget() {
         </button>
       )}
 
-      {/* Chat Panel */}
       {open && (
         <div
           className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)] rounded-2xl flex flex-col overflow-hidden animate-scale-in"
@@ -177,6 +208,7 @@ export function ChatWidget() {
                 <p className="text-sm font-medium text-gray-100">Greenlight AI</p>
                 <p className="text-[10px] text-gray-500">
                   {coacheeCount} coachees &middot; {pendingCount} pending actions
+                  {convexReady && " · synced"}
                 </p>
               </div>
             </div>
@@ -209,9 +241,7 @@ export function ChatWidget() {
                 >
                   <Bot className="w-6 h-6" style={{ color: colors.preview }} />
                 </div>
-                <p className="text-sm font-medium text-gray-300 mb-1">
-                  Hi, I'm Greenlight AI
-                </p>
+                <p className="text-sm font-medium text-gray-300 mb-1">Hi, I'm Greenlight AI</p>
                 <p className="text-xs text-gray-500 max-w-[280px]">
                   I know your {coacheeCount} coachees and their {pendingCount} pending
                   actions. Ask me anything about your coaching programme.
@@ -223,20 +253,17 @@ export function ChatWidget() {
                     "Summarise pending actions",
                     "Draft a meeting recap",
                     "Suggest speaker topics",
-                  ].map((suggestion) => (
+                  ].map((s) => (
                     <button
-                      key={suggestion}
-                      onClick={() => {
-                        setInput(suggestion);
-                        inputRef.current?.focus();
-                      }}
+                      key={s}
+                      onClick={() => { setInput(s); inputRef.current?.focus(); }}
                       className="text-[11px] px-3 py-1.5 rounded-full border text-gray-400 hover:text-gray-200 transition-all hover:scale-[1.02]"
                       style={{
                         borderColor: `rgba(${colors.accentRgb}, 0.2)`,
                         background: `rgba(${colors.accentRgb}, 0.04)`,
                       }}
                     >
-                      {suggestion}
+                      {s}
                     </button>
                   ))}
                 </div>
@@ -244,15 +271,9 @@ export function ChatWidget() {
             )}
 
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={i} className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 {msg.role === "assistant" && (
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                    style={{ background: `rgba(${colors.accentRgb}, 0.12)` }}
-                  >
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: `rgba(${colors.accentRgb}, 0.12)` }}>
                     <Bot className="w-3.5 h-3.5" style={{ color: colors.preview }} />
                   </div>
                 )}
@@ -262,13 +283,7 @@ export function ChatWidget() {
                       ? "text-white rounded-br-sm"
                       : "bg-white/[0.04] text-gray-200 border border-white/[0.06] rounded-bl-sm"
                   }`}
-                  style={
-                    msg.role === "user"
-                      ? {
-                          background: `linear-gradient(135deg, ${colors.preview}, ${colors.preview}bb)`,
-                        }
-                      : undefined
-                  }
+                  style={msg.role === "user" ? { background: `linear-gradient(135deg, ${colors.preview}, ${colors.preview}bb)` } : undefined}
                 >
                   <div className="whitespace-pre-wrap">{msg.content}</div>
                 </div>
@@ -282,10 +297,7 @@ export function ChatWidget() {
 
             {loading && (
               <div className="flex gap-2.5">
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ background: `rgba(${colors.accentRgb}, 0.12)` }}
-                >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: `rgba(${colors.accentRgb}, 0.12)` }}>
                   <Bot className="w-3.5 h-3.5" style={{ color: colors.preview }} />
                 </div>
                 <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl rounded-bl-sm px-4 py-3">
@@ -302,17 +314,10 @@ export function ChatWidget() {
           </div>
 
           {/* Input */}
-          <form
-            onSubmit={handleSubmit}
-            className="px-3 py-3 shrink-0"
-            style={{ borderTop: `1px solid rgba(${colors.accentRgb}, 0.08)` }}
-          >
+          <form onSubmit={handleSubmit} className="px-3 py-3 shrink-0" style={{ borderTop: `1px solid rgba(${colors.accentRgb}, 0.08)` }}>
             <div
               className="flex items-center gap-2 rounded-xl px-3 py-1.5 transition-all"
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: `1px solid rgba(${colors.accentRgb}, 0.1)`,
-              }}
+              style={{ background: "rgba(255,255,255,0.03)", border: `1px solid rgba(${colors.accentRgb}, 0.1)` }}
             >
               <input
                 ref={inputRef}
@@ -327,18 +332,9 @@ export function ChatWidget() {
                 type="submit"
                 disabled={!input.trim() || loading}
                 className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-30 hover:scale-105 active:scale-95"
-                style={{
-                  background: input.trim()
-                    ? `rgba(${colors.accentRgb}, 0.2)`
-                    : "transparent",
-                  color: colors.preview,
-                }}
+                style={{ background: input.trim() ? `rgba(${colors.accentRgb}, 0.2)` : "transparent", color: colors.preview }}
               >
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               </button>
             </div>
           </form>
