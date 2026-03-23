@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "./logo";
 import { useAuth } from "@/components/providers/auth-provider";
+import { AddCoacheeDialog } from "@/components/coachee/add-coachee-dialog";
 import { initials, avatarColor } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -140,15 +141,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           </div>
 
           {/* Add Person Button */}
-          <button
-            onClick={() => navigate("/dashboard?add=true")}
-            className="w-full flex items-center gap-3 px-5 py-2.5 mt-1 text-sm text-green-400/70 hover:text-green-300 transition-colors border-l-3 border-transparent"
-          >
-            <div className="w-7 h-7 rounded-full border-2 border-dashed border-green-500/40 flex items-center justify-center">
-              <Plus className="w-3.5 h-3.5" />
-            </div>
-            <span>Add Person</span>
-          </button>
+          {userId && <AddCoacheeDialog userId={userId as any} variant="sidebar" />}
         </div>
 
         {/* Resources Section */}

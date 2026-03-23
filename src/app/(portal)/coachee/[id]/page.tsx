@@ -831,7 +831,6 @@ function InsightsTab({
       await onRefresh({
         coacheeId: coacheeId as any,
         userId: userId as any,
-        industry: coachee.industry || "General",
       });
       toast.success("Insights refreshed", {
         description: "New industry insights have been generated.",
