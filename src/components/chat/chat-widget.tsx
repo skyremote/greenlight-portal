@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { useTheme } from "@/components/providers/theme-provider";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/providers/auth-provider";
 import {
   MessageCircle,
   X,
@@ -10,7 +12,6 @@ import {
   Loader2,
   Bot,
   User,
-  Minimize2,
   Trash2,
 } from "lucide-react";
 
@@ -37,6 +38,14 @@ function saveMessages(messages: Message[]) {
 
 export function ChatWidget() {
   const { colors } = useTheme();
+  const { user } = useAuth();
+  const userId = user?._id;
+
+  // Pull live data from Convex for AI context
+  const coachees = useQuery(api.coachees.list, userId ? { userId: userId as any } : "skip");
+  const allActions = useQuery(api.actions.listByUser, userId ? { userId: userId as any } : "skip");
+  const speakers = useQuery(api.speakers.list, userId ? { userId: userId as any } : "skip");
+
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -45,30 +54,47 @@ export function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load persisted messages on mount
   useEffect(() => {
     setMessages(loadMessages());
     setMounted(true);
   }, []);
 
-  // Persist messages on change
   useEffect(() => {
     if (mounted && messages.length > 0) {
       saveMessages(messages);
     }
   }, [messages, mounted]);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Focus input when opened
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [open]);
+
+  // Build context object with coachee names mapped to actions
+  function buildContext() {
+    const coacheeMap = new Map<string, string>();
+    if (coachees) {
+      for (const c of coachees) {
+        coacheeMap.set(c._id, c.name);
+      }
+    }
+
+    const actionsWithNames = allActions?.map((a: any) => ({
+      ...a,
+      coacheeName: coacheeMap.get(a.coacheeId) || "Unknown",
+    }));
+
+    return {
+      coachees: coachees || [],
+      actions: actionsWithNames || [],
+      speakers: speakers || [],
+    };
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -85,7 +111,10 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updated }),
+        body: JSON.stringify({
+          messages: updated,
+          context: buildContext(),
+        }),
       });
 
       const data = await res.json();
@@ -118,6 +147,9 @@ export function ChatWidget() {
 
   if (!mounted) return null;
 
+  const pendingCount = allActions?.filter((a: any) => !a.done).length ?? 0;
+  const coacheeCount = coachees?.length ?? 0;
+
   return (
     <>
       {/* Chat FAB */}
@@ -141,7 +173,8 @@ export function ChatWidget() {
 
       {/* Chat Panel */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-4rem)] rounded-2xl flex flex-col overflow-hidden animate-scale-in"
+        <div
+          className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)] rounded-2xl flex flex-col overflow-hidden animate-scale-in"
           style={{
             background: "rgba(14, 14, 14, 0.95)",
             backdropFilter: "blur(20px)",
@@ -167,7 +200,9 @@ export function ChatWidget() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-100">Greenlight AI</p>
-                <p className="text-[10px] text-gray-500">Coaching Assistant</p>
+                <p className="text-[10px] text-gray-500">
+                  {coacheeCount} coachees &middot; {pendingCount} pending actions
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -202,15 +237,17 @@ export function ChatWidget() {
                 <p className="text-sm font-medium text-gray-300 mb-1">
                   Hi, I'm Greenlight AI
                 </p>
-                <p className="text-xs text-gray-500 max-w-[260px]">
-                  Your coaching assistant. Ask me about session prep, coaching
-                  frameworks, action items, or leadership development.
+                <p className="text-xs text-gray-500 max-w-[280px]">
+                  I know your {coacheeCount} coachees and their {pendingCount} pending
+                  actions. Ask me anything about your coaching programme.
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 mt-4">
                   {[
-                    "Prepare a GROW session",
-                    "Draft meeting recap",
-                    "Leadership questions",
+                    "Who needs attention?",
+                    "Prep a GROW session",
+                    "Summarise pending actions",
+                    "Draft a meeting recap",
+                    "Suggest speaker topics",
                   ].map((suggestion) => (
                     <button
                       key={suggestion}
@@ -307,7 +344,7 @@ export function ChatWidget() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask your coaching assistant..."
+                placeholder="Ask about your coachees, actions, prep..."
                 disabled={loading}
                 className="flex-1 bg-transparent text-sm text-gray-200 placeholder:text-gray-600 outline-none disabled:opacity-50 py-1.5"
               />
