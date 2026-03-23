@@ -128,7 +128,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                   key={coachee._id}
                   onClick={() => navigate(`/coachee/${coachee._id}`)}
                   style={active ? activeStyle : undefined}
-                  className={`w-full flex items-center gap-3 px-5 py-2 text-sm transition-all duration-200 ${
+                  className={`w-full flex items-center gap-3 px-5 py-3 text-sm transition-all duration-200 touch-manipulation ${
                     active
                       ? `${colors.accent} nav-active-indicator`
                       : "text-gray-300 hover:text-gray-100 hover:translate-x-0.5"

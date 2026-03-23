@@ -66,15 +66,15 @@ export default function CoacheePage() {
     <ErrorBoundary>
       <div>
         {/* Hero */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-6">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold ring-2 ring-white/[0.08] shadow-lg"
+            className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl font-bold ring-2 ring-white/[0.08] shadow-lg flex-shrink-0"
             style={{ background: coachee.photo ? undefined : avatarColor(0) }}
           >
             {coachee.photo ? (
               <img
                 src={coachee.photo}
-                className="w-16 h-16 rounded-2xl object-cover"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl object-cover"
                 alt={coachee.name}
               />
             ) : (
@@ -83,7 +83,7 @@ export default function CoacheePage() {
           </div>
           <div className="flex-1 min-w-0">
             <h1
-              className="text-2xl font-bold text-gray-100 font-heading"
+              className="text-xl sm:text-2xl font-bold text-gray-100 font-heading break-words"
             >
               {coachee.name}
             </h1>
@@ -124,12 +124,12 @@ export default function CoacheePage() {
 
         {/* Tabs */}
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="w-full justify-start bg-white/[0.03] border border-white/[0.06] rounded-lg p-1 mb-6">
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="meetings">Meetings</TabsTrigger>
-            <TabsTrigger value="actions">Actions</TabsTrigger>
-            <TabsTrigger value="schedule">Schedule</TabsTrigger>
-            <TabsTrigger value="insights">Insights</TabsTrigger>
+          <TabsList className="w-full justify-start bg-white/[0.03] border border-white/[0.06] rounded-lg p-1 mb-6 overflow-x-auto flex-nowrap">
+            <TabsTrigger value="profile" className="text-xs sm:text-sm">Profile</TabsTrigger>
+            <TabsTrigger value="meetings" className="text-xs sm:text-sm">Meetings</TabsTrigger>
+            <TabsTrigger value="actions" className="text-xs sm:text-sm">Actions</TabsTrigger>
+            <TabsTrigger value="schedule" className="text-xs sm:text-sm">Schedule</TabsTrigger>
+            <TabsTrigger value="insights" className="text-xs sm:text-sm">Insights</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">

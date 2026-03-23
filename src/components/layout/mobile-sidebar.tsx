@@ -36,7 +36,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
       />
 
       {/* Sidebar panel */}
-      <div className="absolute inset-y-0 left-0 w-[280px] shadow-2xl shadow-black/50 animate-in slide-in-from-left duration-200">
+      <div className="absolute inset-y-0 left-0 w-[280px] h-full overflow-hidden shadow-2xl shadow-black/50 animate-in slide-in-from-left duration-200">
         <div className="absolute top-3 right-3 z-10">
           <Button
             variant="ghost"

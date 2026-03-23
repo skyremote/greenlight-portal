@@ -42,7 +42,7 @@ export default function PortalLayout({
     <ConvexProvider client={convex}>
       <AuthProvider>
         <ThemeProvider>
-        <div className="flex h-screen overflow-hidden bg-[#0a0a0a]">
+        <div className="flex h-dvh overflow-hidden bg-[#0a0a0a]">
           <aside className="hidden md:flex md:w-[280px] md:flex-shrink-0">
             <div className="w-full">
               <Sidebar />

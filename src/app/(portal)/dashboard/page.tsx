@@ -33,7 +33,7 @@ export default function DashboardPage() {
         </h1>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
           <StatCard
             label="Active Coachees"
             value={activeCoachees}
@@ -97,7 +97,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {coachees.map((c: any, index: number) => (
                   <a key={c._id} href={`/coachee/${c._id}`}
-                    className="stagger-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-all duration-300 group border border-transparent hover:border-white/[0.06]"
+                    className="stagger-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.04] active:bg-white/[0.04] transition-all duration-300 group border border-transparent hover:border-white/[0.06] touch-manipulation"
                   >
                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold ring-2 ring-transparent group-hover:ring-green-500/30 transition-all duration-300"
                       style={{ background: c.photo ? undefined : '#1B5E20' }}>
